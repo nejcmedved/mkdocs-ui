@@ -1,0 +1,20 @@
+services:
+  mkdocs-ui:
+    build:
+      context: .
+      args:
+        EXTRA_PIP: "mkdocs-static-i18n>=1.2"   # mervin docs use the i18n plugin
+    image: mkdocs-ui
+    # Write files as your host user instead of root (run `id -u` / `id -g` to find yours)
+    # user: "1000:1000"
+    ports:
+      - "8000:8000"          # editor UI
+      - "8100-8119:8100-8119" # mkdocs previews, one port per project
+    volumes:
+      # Directory mount (not a single file) so the UI can save config.yaml atomically
+      - ./docker:/config
+      # Host folder browsable in ⚙ Settings as /docs. Set DOCS_ROOT in .env, e.g. DOCS_ROOT=E:/github
+      - ${DOCS_ROOT:-./examples}:/docs
+      # More host folders: mount them *under* /docs so allowed_roots still covers them, e.g.
+      # - D:/team-wiki:/docs/team-wiki
+    restart: unless-stopped

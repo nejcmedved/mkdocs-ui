@@ -1,0 +1,15 @@
+allowed_roots:
+- /docs
+projects:
+- name: handbook
+  path: /docs/handbook
+- name: api-docs
+  path: /docs/api-docs
+- name: nordic
+  path: /docs/nordic
+- name: mervin
+  path: /docs/mervin
+preview:
+  enabled: true
+  base_port: 8100
+autosave_delay: 1

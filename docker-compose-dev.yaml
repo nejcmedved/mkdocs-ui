@@ -1,0 +1,45 @@
+# Development stack: backend with auto-reload + Vite dev server with hot module reload.
+#
+#   docker compose -f docker-compose-dev.yaml up --build
+#
+# Open http://localhost:5173 (Vite proxies /api and /ws to the backend).
+name: mkdocs-ui-dev
+
+services:
+  backend:
+    build:
+      context: .
+      target: backend-dev
+    environment:
+      # Bind mounts from Windows/macOS hosts don't deliver file events: poll instead
+      WATCHFILES_FORCE_POLLING: "true"
+    ports:
+      - "9000:8000"           # API (also handy for hitting endpoints directly)
+      - "8100-8119:8100-8119" # mkdocs previews, one port per project
+    volumes:
+      - ./backend/app:/app/app
+      # Directory mount (not a single file) so the UI can save config.yaml atomically
+      - ./docker:/config
+      # Host folder browsable in ⚙ Settings as /docs. Set DOCS_ROOT in .env, e.g. DOCS_ROOT=E:/github
+      - ${DOCS_ROOT:-./examples}:/docs
+      # More host folders: mount them *under* /docs so allowed_roots still covers them, e.g.
+      # - D:/team-wiki:/docs/team-wiki
+
+  frontend:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0"
+    environment:
+      BACKEND_URL: http://backend:9000
+      VITE_POLLING: "true"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      # Keep the container's Linux node_modules separate from the host's
+      - frontend_node_modules:/app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  frontend_node_modules:

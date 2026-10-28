@@ -1,0 +1,21 @@
+# MkDocs UI configuration. Relative paths are resolved against this file's directory.
+# Editable from the UI (⚙ Settings).
+
+# Restrict which folders the UI may browse / use as projects (unrestricted when omitted):
+# allowed_roots:
+#   - examples
+
+projects:
+  - name: handbook
+    path: examples/handbook
+    # assets_dir: assets/images   # where pasted images go, relative to docs_dir
+    # preview_port: 8100          # defaults to preview.base_port + index
+  - name: api-docs
+    path: examples/api-docs
+
+preview:
+  enabled: true      # run `mkdocs serve` for every project
+  base_port: 8100
+  # host: docs.example.local   # hostname used for preview links (defaults to the UI's hostname)
+
+autosave_delay: 1.0  # seconds of inactivity before an edited file is written to disk
